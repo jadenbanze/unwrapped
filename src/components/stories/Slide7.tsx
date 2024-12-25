@@ -68,7 +68,7 @@ export default function Slide7() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="z-10"
+        className="z-10 w-full max-w-md mx-auto"
       >
         <motion.div variants={itemVariants}>
           <motion.h2 className="text-2xl font-bold mb-6">
@@ -80,6 +80,7 @@ export default function Slide7() {
           variants={imageVariants}
           whileHover={{ scale: 1.05, rotate: [-2, 2, -2] }}
           transition={{ duration: 0.5 }}
+          className="flex justify-center"
         >
           <Image
             src={topArtist.image}

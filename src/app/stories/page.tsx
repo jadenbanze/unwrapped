@@ -1,10 +1,12 @@
 "use client"
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Spinner } from "@nextui-org/spinner";
+import DownloadButton from '@/components/DownloadButton'
 import Slide1 from '@/components/stories/Slide1'
 import Slide2 from '@/components/stories/Slide2'
 import Slide3 from '@/components/stories/Slide3'
@@ -14,12 +16,33 @@ import Slide6 from '@/components/stories/Slide6'
 import Slide7 from '@/components/stories/Slide7'
 import Slide8 from '@/components/stories/Slide8'
 import Slide9 from '@/components/stories/Slide9'
+import SlideOverview from '@/components/stories/SlideOverview'
 
-const slides = [Slide1, Slide2, Slide3, Slide4, Slide5, Slide6, Slide7, Slide8, Slide9]
+const slides = [
+  Slide1, Slide2, Slide3, Slide4, Slide5, 
+  Slide6, Slide7, Slide8, Slide9, 
+  ({ session }: { session: any }) => <SlideOverview session={session} />
+]
 
 export default function Stories() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [currentSlide, setCurrentSlide] = useState(0)
+
+  // Check if the session is loading or if the user is not authenticated
+  if (status === "loading") {
+    return <Spinner size="lg" />
+  }
+
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
+        <p className="text-center pb-4">Please sign in to access your unwrapped!</p>
+        <Button onClick={() => signIn('spotify', { callbackUrl: '/upload' })}>
+          Sign In
+        </Button>
+      </div>
+    )
+  }
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length)
@@ -54,12 +77,20 @@ export default function Stories() {
           exit={{ opacity: 0, x: -100 }}
           transition={{ duration: 0.3 }}
           className="w-full max-w-md aspect-[9/16] bg-card rounded-lg shadow-lg overflow-hidden"
+          id={`story-slide-${currentSlide}`}
         >
           {slides.map((Slide, index) => (
             currentSlide === index && <Slide key={index} session={session} />
           ))}
         </motion.div>
       </AnimatePresence>
+
+      <div className="absolute top-8 right-8 z-20">
+        <DownloadButton 
+          elementId={`story-slide-${currentSlide}`} 
+          filename={`music-story-slide-${currentSlide + 1}`} 
+        />
+      </div>
 
       <Button
         variant="ghost"
