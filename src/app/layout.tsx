@@ -1,7 +1,7 @@
 import "@/app/globals.css"
 import type { Metadata } from "next"
 import { Roboto_Mono, Playfair_Display } from 'next/font/google'
-import { ThemeProvider } from "@/components/theme-provider"
+import { Providers } from "@/components/providers"
 
 const robotoMono = Roboto_Mono({
   subsets: ["latin"],
@@ -26,9 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${robotoMono.variable} ${playfair.variable} font-mono antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Providers>
           {children}
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   )

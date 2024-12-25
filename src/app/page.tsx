@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Download, Upload, Star } from 'lucide-react';
+import { signIn, useSession } from "next-auth/react";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer"
 
 export default function Home() {
   const containerVariants = {
@@ -30,13 +33,12 @@ export default function Home() {
     },
   }
 
+  const { data: session } = useSession();
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-background to-primary/10">
+      <Navbar />
       <header className="py-6 px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-poppins font-bold">Unwrapped</h1>
-          <ModeToggle />
-        </div>
         <motion.div
           className="mt-16 text-center"
           variants={containerVariants}
@@ -56,8 +58,12 @@ export default function Home() {
             Let's be honest, Spotify dropped the ball this year with Wrapped. Let's fix that.
           </motion.p>
           <motion.div variants={itemVariants}>
-            <Button size="lg" className="mt-8 px-8 py-6 text-lg rounded-md">
-              Get Started
+            <Button 
+              size="lg" 
+              className="mt-8 px-8 py-6 text-lg rounded-md"
+              onClick={() => signIn('spotify', { callbackUrl: '/' })}
+            >
+              {session ? 'View Your Stats' : 'Connect with Spotify'}
             </Button>
           </motion.div>
         </motion.div>
@@ -119,9 +125,7 @@ export default function Home() {
           </motion.div>
         </motion.div>
       </main>
-      <footer className="py-6 text-center text-sm text-muted-foreground">
-        Made with love by Jaden
-      </footer>
+      <Footer />
     </div>
   )
 }
