@@ -29,8 +29,8 @@ export default function Slide4({ totalUniqueSongs = 0 }: { totalUniqueSongs: num
         ))}
       </motion.div>
 
-      <h2 className="text-2xl font-bold mb-4 z-10">This year, you discovered</h2>
-      <p className="text-4xl font-bold text-primary mb-4">{totalUniqueSongs.toLocaleString()} unique songs</p>
+      <h2 className="text-2xl font-bold mb-4 z-10">This year, you listened to</h2>
+      <p className="text-4xl font-bold text-primary mb-4">{totalUniqueSongs.toLocaleString()} songs</p>
       <p className="text-lg">That's a lot of music!</p>
     </div>
   )

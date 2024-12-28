@@ -27,8 +27,8 @@ interface SpotifyTrack {
     // Sort all tracks by date
     const allTracks = tracks.sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime());
   
-    // Initialize tracking maps and sets
-    const artistPlayCounts = new Map<string, number>();
+    // Track both play count and duration for artists
+    const artistStats = new Map<string, { count: number; msPlayed: number; score: number }>();
     const songPlayCounts = new Map<string, {
       name: string;
       artist: string;
@@ -42,19 +42,23 @@ interface SpotifyTrack {
   
     // Process each track
     allTracks.forEach(track => {
-      // Only count the song if it was played for 30 seconds or more
       if (track.msPlayed >= 30000) {
         totalSongsPlayed++;
-        uniqueSongs.add(track.trackName); // Add to unique songs only if played for 30 seconds or more
+        // Update artist stats
+        const stats = artistStats.get(track.artistName) || { count: 0, msPlayed: 0, score: 0 };
+        stats.count += 1;
+        stats.msPlayed += track.msPlayed;
+        // Score = plays * 10000 + milliseconds (to weight both factors)
+        stats.score = stats.count * 10000 + stats.msPlayed;
+        artistStats.set(track.artistName, stats);
       }
       totalMsPlayed += track.msPlayed;
   
-      // Update artist play counts based on ms_played, not count
-      const currentArtistMs = artistPlayCounts.get(track.artistName) || 0;
-      artistPlayCounts.set(track.artistName, currentArtistMs + track.msPlayed);
+      // Track unique songs
+      uniqueSongs.add(track.trackName);
   
-      // Update song play counts based on ms_played
-      const songKey = track.trackName;  // Changed from `${track.trackName}-${track.artistName}`
+      // Update song play counts
+      const songKey = track.trackName;
       const existingSong = songPlayCounts.get(songKey);
   
       if (existingSong) {
@@ -66,17 +70,26 @@ interface SpotifyTrack {
           artist: track.artistName,
           count: 1,
           msPlayed: track.msPlayed,
-          firstListenDate: track.endTime
+          firstListenDate: new Date(track.endTime).toLocaleDateString('en-US')
         });
       }
     });
   
+    // Get top artists sorted by score
+    const topArtists = Array.from(artistStats.entries())
+      .map(([name, stats]) => ({ 
+        name, 
+        count: stats.count,
+        msPlayed: stats.msPlayed,
+        score: stats.score 
+      }))
+      .sort((a, b) => b.score - a.score)
+      .map(({ name, count }) => ({ name, count }))
+      .slice(0, 5);
+  
     // Return the processed data
     return {
-      topArtists: Array.from(artistPlayCounts.entries())
-        .map(([name, msPlayed]) => ({ name, count: msPlayed }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5),
+      topArtists,
       topSongs: Array.from(songPlayCounts.values())
         .sort((a, b) => b.count - a.count)
         .map(song => ({

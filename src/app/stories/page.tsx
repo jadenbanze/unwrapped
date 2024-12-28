@@ -112,11 +112,11 @@ export default function Stories() {
                 session={session}
                 {...(index === 1 ? { totalMinutes: processedData.totalMinutesPlayed } : {})}
                 {...(index === 2 ? { topGenres: processedData.topGenres } : {})}
-                {...(index === 3 ? { totalSongsPlayed: processedData.totalSongsPlayed, totalUniqueSongs: processedData.totalUniqueSongs } : {})}
+                {...(index === 3 ? { totalUniqueSongs: processedData.totalUniqueSongs } : {})}
                 {...(index === 4 ? { topSong: processedData.topSongs[0] } : {})}
-                {...(index === 5 ? { topSongs: processedData.topSongs.slice(1) } : {})}
+                {...(index === 5 ? { topSongs: processedData.topSongs } : {})}
                 {...(index === 6 ? { topArtist: processedData.topArtists[0] } : {})}
-                {...(index === 7 ? { topArtists: processedData.topArtists.slice(1) } : {})}
+                {...(index === 7 ? { topArtists: processedData.topArtists } : {})}
                 {...(index === 8 ? { morningFavorite: processedData.morningFavorite, nightFavorite: processedData.nightFavorite } : {})}
               />
             )
