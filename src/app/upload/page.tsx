@@ -7,10 +7,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { FileJson } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
+import { processSpotifyData } from '@/utils/processSpotifyData'
+import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
-export default function UploadPage() {
+export default function Upload() {
   const { data: session, status } = useSession()
   const [error, setError] = useState<string | null>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const router = useRouter()
 
   // Redirect if not authenticated
   if (status === 'unauthenticated') {
@@ -18,37 +24,53 @@ export default function UploadPage() {
   }
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]
-    if (!file) return
-
-    // Check if it's a JSON file
-    if (file.type !== 'application/json') {
-      setError('Please upload a JSON file')
-      return
-    }
-
-    // TODO: Handle file upload
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      try {
-        const text = e.target?.result
-        const json = JSON.parse(text as string)
-        // TODO: Send to your API
-        console.log('Parsed JSON:', json)
-      } catch (err) {
-        setError('Invalid JSON file')
-      }
-    }
-    reader.readAsText(file)
-  }, [])
+    // Sort files by name to ensure correct order
+    const sortedFiles = acceptedFiles.sort((a, b) => a.name.localeCompare(b.name));
+    setFiles(sortedFiles);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
       'application/json': ['.json']
     },
-    maxFiles: 1
+    multiple: true
   })
+
+  const handleUpload = async () => {
+    if (files.length === 0) {
+      toast.error('Please select at least one file to upload.');
+      return;
+    }
+
+    try {
+      // Read all files and parse them
+      const allTracks = await Promise.all(
+        files.map(async (file) => {
+          const text = await file.text();
+          const data = JSON.parse(text);
+          console.log(`Parsed ${file.name}:`, data.length, 'tracks'); // Debug log
+          return data;
+        })
+      ).then(fileContents => fileContents.flat());
+
+      // Log the combined data for debugging
+      console.log('Total tracks across all files:', allTracks.length);
+
+      // Process the data
+      const processed = processSpotifyData(allTracks);
+      console.log('Processed data:', processed); // Debug log
+
+      // Store the processed data
+      localStorage.setItem('spotifyData', JSON.stringify(processed));
+      
+      toast.success('Data processed successfully!');
+      router.push('/stories');
+    } catch (error) {
+      console.error('Error processing files:', error);
+      toast.error('Error processing files. Please ensure all files are valid Spotify streaming history.');
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -85,14 +107,29 @@ export default function UploadPage() {
         <input {...getInputProps()} />
         <FileJson className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
         {isDragActive ? (
-          <p className="text-lg">Drop the JSON file here...</p>
+          <p className="text-lg">Drop the JSON files here...</p>
         ) : (
           <div className="space-y-2">
-            <p className="text-lg">Drag & drop your Spotify data JSON file here</p>
-            <p className="text-sm text-muted-foreground">or click to select file</p>
+            <p className="text-lg">Drag & drop your Spotify data JSON files here</p>
+            <p className="text-sm text-muted-foreground">or click to select files</p>
           </div>
         )}
       </div>
+
+      {files.length > 0 && (
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Selected Files:</h3>
+          <ul className="list-disc list-inside">
+            {files.map((file, index) => (
+              <li key={index}>{file.name}</li>
+            ))}
+          </ul>
+          <Button onClick={handleUpload} className="mt-4">
+            Process Files
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
+

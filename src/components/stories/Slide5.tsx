@@ -6,16 +6,25 @@ import { Disc, Heart, Play, Repeat, Star } from "lucide-react"
 import Image from 'next/image'
 import { useState } from 'react'
 
-export default function Slide5() {
-  const topSong = {
-    name: "Blinding Lights",
-    artist: "The Weeknd",
-    coverArt: "https://t2.genius.com/unsafe/504x504/https%3A%2F%2Fimages.genius.com%2F34c1c35ca27a735e6e5f18611acb1c16.1000x1000x1.png",
-    playCount: 157,
-    firstListenDate: "March 15, 2024"
-  }
+interface TopSong {
+  name: string;
+  artist: string;
+  count: number;
+  msPlayed: number;
+  coverArt: string;
+  playCount: number;
+  firstListenDate: string;
+}
 
+export default function Slide5({ topSong }: { topSong: TopSong }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  
+  // Format the first listen date from the data
+  const firstListenDate = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;

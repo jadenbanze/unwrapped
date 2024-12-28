@@ -2,25 +2,34 @@
 import { motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export default function SlideOverview({ session }: { session: any }) {
+interface TopArtist {
+  name: string;
+  // Add other properties if needed
+}
+
+interface TopSong {
+  name: string;
+  artist: string;
+  count: number;
+  msPlayed: number;
+  coverArt: string;
+  playCount: number;
+  firstListenDate: string;
+}
+
+export default function SlideOverview({ 
+  session, 
+  processedData 
+}: { 
+  session: any;
+  processedData: any;
+}) {
   const stats = {
-    topArtists: [
-      "Ken Carson",
-      "Drake",
-      "Brent Faiyaz",
-      "Nafi Islam",
-      "Jesus Christ"
-    ],
-    topSongs: [
-      "Freestyle 2",
-      "Darling, I",
-      "Party Rock Anthem",
-      "Test",
-      "Test"
-    ],
-    minutesListened: "127,528",
-    topGenre: "Opium Rap",
-    topArtistImage: "/placeholder.svg"
+    topArtists: processedData.topArtists.map((a: TopArtist) => a.name),
+    topSongs: processedData.topSongs.map((s: TopSong) => s.name),
+    minutesListened: processedData.totalMinutesPlayed.toLocaleString(),
+    topGenre: processedData.topGenres[0],
+    topArtistImage: processedData.topArtists[0]?.coverArt || '/placeholder.svg',
   }
 
   const containerVariants = {
@@ -70,7 +79,7 @@ export default function SlideOverview({ session }: { session: any }) {
           {/* Top Artists */}
           <motion.div variants={itemVariants} className="text-left">
             <h3 className="text-xl font-bold mb-4">Top Artists</h3>
-            {stats.topArtists.map((artist, index) => (
+            {stats.topArtists.map((artist: string, index: number) => (
               <div key={index} className="flex items-center gap-2 mb-2">
                 <span className="text-primary font-bold">{index + 1}</span>
                 <span className="text-sm">{artist}</span>
@@ -81,10 +90,10 @@ export default function SlideOverview({ session }: { session: any }) {
           {/* Top Songs */}
           <motion.div variants={itemVariants} className="text-left">
             <h3 className="text-xl font-bold mb-4">Top Songs</h3>
-            {stats.topSongs.map((song, index) => (
+            {stats.topSongs.map((song: TopSong, index: number) => (
               <div key={index} className="flex items-center gap-2 mb-2">
                 <span className="text-primary font-bold">{index + 1}</span>
-                <span className="text-sm">{song}</span>
+                <span className="text-sm">{song.name}</span>
               </div>
             ))}
           </motion.div>

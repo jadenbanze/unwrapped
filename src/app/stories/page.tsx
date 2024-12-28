@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, ReactNode, FC } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -16,33 +16,59 @@ import Slide6 from '@/components/stories/Slide6'
 import Slide7 from '@/components/stories/Slide7'
 import Slide8 from '@/components/stories/Slide8'
 import Slide9 from '@/components/stories/Slide9'
-import SlideOverview from '@/components/stories/SlideOverview'
+import Slide10 from '@/components/stories/Slide10'
 
-const slides = [
-  Slide1, Slide2, Slide3, Slide4, Slide5, 
-  Slide6, Slide7, Slide8, Slide9, 
-  ({ session }: { session: any }) => <SlideOverview session={session} />
-]
+interface TopSong {
+  name: string;
+  artist: string;
+  count: number;
+  msPlayed: number;
+  coverArt: string;
+  playCount: number;
+  firstListenDate: string;
+}
 
 export default function Stories() {
   const { data: session, status } = useSession()
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [processedData, setProcessedData] = useState<any>(null)
 
-  // Check if the session is loading or if the user is not authenticated
+  useEffect(() => {
+    const data = localStorage.getItem('spotifyData')
+    if (data) {
+      const parsedData = JSON.parse(data)
+      console.log(parsedData)
+      setProcessedData(parsedData)
+    }
+  }, [])
+
   if (status === "loading") {
     return <Spinner size="lg" />
   }
 
-  if (!session) {
+  if (!session || !processedData) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
-        <p className="text-center pb-4">Please sign in to access your unwrapped!</p>
+        <p className="text-center pb-4">Please sign in and upload your data first!</p>
         <Button onClick={() => signIn('spotify', { callbackUrl: '/upload' })}>
           Sign In
         </Button>
       </div>
     )
   }
+
+  const slides: FC<any>[] = [
+    Slide1,
+    Slide2,
+    Slide3,
+    Slide4,
+    Slide5,
+    Slide6,
+    Slide7,
+    Slide8,
+    Slide10,
+    Slide9,
+  ];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length)
@@ -79,8 +105,21 @@ export default function Stories() {
           className="w-full max-w-md aspect-[9/16] bg-card rounded-lg shadow-lg overflow-hidden"
           id={`story-slide-${currentSlide}`}
         >
-          {slides.map((Slide, index) => (
-            currentSlide === index && <Slide key={index} session={session} />
+          {slides.map((SlideComponent, index) => (
+            currentSlide === index && (
+              <SlideComponent
+                key={index}
+                session={session}
+                {...(index === 1 ? { totalMinutes: processedData.totalMinutesPlayed } : {})}
+                {...(index === 2 ? { topGenres: processedData.topGenres } : {})}
+                {...(index === 3 ? { totalSongsPlayed: processedData.totalSongsPlayed, totalUniqueSongs: processedData.totalUniqueSongs } : {})}
+                {...(index === 4 ? { topSong: processedData.topSongs[0] } : {})}
+                {...(index === 5 ? { topSongs: processedData.topSongs.slice(1) } : {})}
+                {...(index === 6 ? { topArtist: processedData.topArtists[0] } : {})}
+                {...(index === 7 ? { topArtists: processedData.topArtists.slice(1) } : {})}
+                {...(index === 8 ? { morningFavorite: processedData.morningFavorite, nightFavorite: processedData.nightFavorite } : {})}
+              />
+            )
           ))}
         </motion.div>
       </AnimatePresence>

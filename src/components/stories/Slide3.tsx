@@ -4,9 +4,11 @@ import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
 import { Headphones, Music2, Radio, Mic2, Piano } from "lucide-react"
 
-export default function Slide3() {
-  const topGenres = ["Pop", "Rock", "Hip-Hop", "Electronic", "Jazz"]
-  
+interface Slide3Props {
+  topGenres: string[];
+}
+
+export default function Slide3({ topGenres }: Slide3Props) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

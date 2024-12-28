@@ -4,10 +4,9 @@ import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
 import { Clock, Music, Zap } from "lucide-react"
 
-export default function Slide2() {
-  const minutes = 54321
-  const days = Math.floor(minutes / (60 * 24))
-  const lightYears = (minutes * 299792458 * 60) / 9.461e15
+export default function Slide2({ totalMinutes }: { totalMinutes: number }) {
+  const days = Math.floor(totalMinutes / (60 * 24))
+  const lightYears = (totalMinutes * 299792458 * 60) / 9.461e15
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -62,7 +61,7 @@ export default function Slide2() {
           variants={itemVariants}
           className="text-4xl font-bold text-primary mb-4"
         >
-          {minutes.toLocaleString()} minutes
+          {totalMinutes.toLocaleString()} minutes
         </motion.p>
         
         <motion.div variants={itemVariants}>

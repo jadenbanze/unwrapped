@@ -5,12 +5,13 @@ import { FloatingObject } from "@/components/FloatingObject"
 import { Mic, Music, Star, Trophy, Crown } from "lucide-react"
 import Image from 'next/image'
 
-export default function Slide7() {
-  const topArtist = {
-    name: "Taylor Swift",
-    image: "/placeholder.svg"
-  }
+interface TopArtist {
+  name: string;
+  count: number;
+  image: string;
+}
 
+export default function Slide7({ topArtist }: { topArtist: TopArtist }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -96,6 +97,10 @@ export default function Slide7() {
           className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60"
         >
           {topArtist.name}
+        </motion.p>
+
+        <motion.p variants={itemVariants} className="text-lg text-primary">
+          {topArtist.count} plays
         </motion.p>
       </motion.div>
     </div>

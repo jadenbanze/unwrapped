@@ -2,15 +2,11 @@
 import { motion } from "framer-motion"
 import Image from 'next/image'
 
-export default function Slide8() {
-  const topArtists = [
-    { name: "Artist 1", image: "/placeholder.svg" },
-    { name: "Artist 2", image: "/placeholder.svg" },
-    { name: "Artist 3", image: "/placeholder.svg" },
-    { name: "Artist 4", image: "/placeholder.svg" },
-    { name: "Artist 5", image: "/placeholder.svg" },
-  ]
+interface Slide8Props {
+  topArtists: { name: string; image: string }[];
+}
 
+export default function Slide8({ topArtists }: Slide8Props) {
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div 
