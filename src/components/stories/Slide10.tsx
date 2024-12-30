@@ -1,54 +1,41 @@
 "use client"
 import { motion } from "framer-motion"
-import { Sun, Moon } from "lucide-react"
 
-interface Slide10Props {
-  morningFavorite: { name: string; artist: string; count: number };
-  nightFavorite: { name: string; artist: string; count: number };
-}
+export default function Slide9() {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
+        {/* Floating circles background */}
+        <motion.div className="absolute inset-0 overflow-hidden">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-primary/10"
+              style={{
+                width: Math.random() * 100 + 50,
+                height: Math.random() * 100 + 50,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                border: '1px solid rgba(var(--primary), 0.2)'
+              }}
+              animate={{
+                y: [0, -20, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 4,
+                delay: i * 0.2,
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+            />
+          ))}
+        </motion.div>
 
-export default function Slide10({ morningFavorite, nightFavorite }: Slide10Props) {
-  const morningName = morningFavorite?.name || "No favorite";
-  const morningArtist = morningFavorite?.artist || "Unknown artist";
+        <h2 className="text-2xl font-bold mb-4 z-10">That was fun!</h2>
+        <p className="text-lg mb-4">Let's do this again next year</p>
+        <span className="text-6xl">😊</span>
+      </div>
+    )
+  }
   
-  const nightName = nightFavorite?.name || "No favorite";
-  const nightArtist = nightFavorite?.artist || "Unknown artist";
-
-  return (
-    <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-8"
-      >
-        <div>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block mb-4"
-          >
-            <Sun className="w-12 h-12 text-primary" />
-          </motion.div>
-          <h3 className="text-xl font-bold mb-2">Morning Favorite</h3>
-          <p className="text-lg font-bold">{morningName}</p>
-          <p className="text-sm text-muted-foreground">by {morningArtist}</p>
-        </div>
-
-        <div>
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.6 }}
-            className="inline-block mb-4"
-          >
-            <Moon className="w-12 h-12 text-primary" />
-          </motion.div>
-          <h3 className="text-xl font-bold mb-2">Night Favorite</h3>
-          <p className="text-lg font-bold">{nightName}</p>
-          <p className="text-sm text-muted-foreground">by {nightArtist}</p>
-        </div>
-      </motion.div>
-    </div>
-  )
-} 
+  

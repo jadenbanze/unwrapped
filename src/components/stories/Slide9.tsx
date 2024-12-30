@@ -1,41 +1,89 @@
 "use client"
 import { motion } from "framer-motion"
+import { Sun, Moon } from "lucide-react"
+import Image from 'next/image'
 
-export default function Slide9() {
-    return (
-      <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
-        {/* Floating circles background */}
-        <motion.div className="absolute inset-0 overflow-hidden">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-primary/10"
-              style={{
-                width: Math.random() * 100 + 50,
-                height: Math.random() * 100 + 50,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                border: '1px solid rgba(var(--primary), 0.2)'
-              }}
-              animate={{
-                y: [0, -20, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 4,
-                delay: i * 0.2,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
-          ))}
-        </motion.div>
+interface Slide10Props {
+  morningFavorite: { 
+    name: string; 
+    artist: string; 
+    count: number;
+    coverArt?: string;
+  };
+  nightFavorite: { 
+    name: string; 
+    artist: string; 
+    count: number;
+    coverArt?: string;
+  };
+}
 
-        <h2 className="text-2xl font-bold mb-4 z-10">That was fun!</h2>
-        <p className="text-lg mb-4">Let's do this again next year</p>
-        <span className="text-6xl">😊</span>
-      </div>
-    )
-  }
-  
-  
+export default function Slide10({ morningFavorite, nightFavorite }: Slide10Props) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-12"
+      >
+        <div>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <Sun className="w-12 h-12 text-primary" />
+            {morningFavorite.coverArt && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="relative w-32 h-32"
+              >
+                <Image
+                  src={morningFavorite.coverArt}
+                  alt={morningFavorite.name}
+                  fill
+                  className="rounded-lg object-cover shadow-lg"
+                />
+              </motion.div>
+            )}
+            <div>
+              <h3 className="text-xl font-bold mb-2">Morning Favorite</h3>
+              <p className="text-lg font-bold">{morningFavorite.name}</p>
+              <p className="text-sm text-muted-foreground">by {morningFavorite.artist}</p>
+            </div>
+          </motion.div>
+        </div>
+
+        <div>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <Moon className="w-12 h-12 text-primary" />
+            {nightFavorite.coverArt && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="relative w-32 h-32"
+              >
+                <Image
+                  src={nightFavorite.coverArt}
+                  alt={nightFavorite.name}
+                  fill
+                  className="rounded-lg object-cover shadow-lg"
+                />
+              </motion.div>
+            )}
+            <div>
+              <h3 className="text-xl font-bold mb-2">Night Favorite</h3>
+              <p className="text-lg font-bold">{nightFavorite.name}</p>
+              <p className="text-sm text-muted-foreground">by {nightFavorite.artist}</p>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
+  )
+} 

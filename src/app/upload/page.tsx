@@ -71,7 +71,18 @@ export default function Upload() {
         ...processed.topArtists.map(artist => ({
           type: 'artist' as const,
           name: artist.name
-        }))
+        })),
+        // Add morning and night favorites
+        {
+          type: 'track' as const,
+          name: processed.morningFavorite.name,
+          artist: processed.morningFavorite.artist
+        },
+        {
+          type: 'track' as const,
+          name: processed.nightFavorite.name,
+          artist: processed.nightFavorite.artist
+        }
       ];
 
       try {
@@ -88,10 +99,23 @@ export default function Upload() {
           image: metadata[index + processed.topSongs.length].image || ''
         }));
 
+        // Add metadata for morning and night favorites
+        const morningFavoriteWithMetadata = {
+          ...processed.morningFavorite,
+          coverArt: metadata[metadata.length - 2].coverArt || ''
+        };
+
+        const nightFavoriteWithMetadata = {
+          ...processed.nightFavorite,
+          coverArt: metadata[metadata.length - 1].coverArt || ''
+        };
+
         const processedWithMetadata = {
           ...processed,
           topSongs: songsWithMetadata,
-          topArtists: artistsWithMetadata
+          topArtists: artistsWithMetadata,
+          morningFavorite: morningFavoriteWithMetadata,
+          nightFavorite: nightFavoriteWithMetadata
         };
 
         // Store the processed data with metadata

@@ -66,8 +66,8 @@ export default function Stories() {
     Slide6,
     Slide7,
     Slide8,
-    Slide10,
     Slide9,
+    Slide10,
   ];
 
   const nextSlide = () => {
