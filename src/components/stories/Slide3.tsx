@@ -3,12 +3,23 @@
 import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
 import { Headphones, Music2, Radio, Mic2, Piano } from "lucide-react"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 interface Slide3Props {
   topGenres: string[];
+  streamingHistory: any[];
 }
 
-export default function Slide3({ topGenres }: Slide3Props) {
+export default function Slide3({ topGenres, streamingHistory }: Slide3Props) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []);
+
+  useAudioPreview(searchQuery);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

@@ -2,8 +2,12 @@
 import { motion } from "framer-motion"
 import Image from 'next/image'
 import { SeasonalTopSong } from '@/types/spotify'
+import { useAudioPreview } from '@/hooks/useAudioPreview'
 
 export default function SpringSlide({ song }: { song: SeasonalTopSong }) {
+  const searchQuery = `${song.name} ${song.artist}`;
+  const { isLoading, error } = useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div

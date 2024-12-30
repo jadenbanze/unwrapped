@@ -2,6 +2,7 @@
 import { motion } from "framer-motion"
 import { Sun, Moon } from "lucide-react"
 import Image from 'next/image'
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 interface Slide10Props {
   morningFavorite: { 
@@ -19,6 +20,9 @@ interface Slide10Props {
 }
 
 export default function Slide10({ morningFavorite, nightFavorite }: Slide10Props) {
+  const searchQuery = `${morningFavorite.name} ${morningFavorite.artist}`;
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-4 text-center relative">
       <motion.div

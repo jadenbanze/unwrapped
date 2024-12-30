@@ -2,10 +2,41 @@
 import { motion } from "framer-motion"
 import Image from 'next/image'
 import { SeasonalTopSong } from '@/types/spotify'
+import { useAudioPreview } from '@/hooks/useAudioPreview'
 
-export default function SpringSlide({ song }: { song: SeasonalTopSong }) {
+const heatWaves = Array.from({ length: 8 });
+
+export default function SummerSlide({ song }: { song: SeasonalTopSong }) {
+  const searchQuery = `${song.name} ${song.artist}`;
+  useAudioPreview(searchQuery);
+
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
+    <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+      {/* Animated sun rays */}
+      {heatWaves.map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-full h-32 bg-gradient-to-t from-orange-200/10 to-transparent"
+          initial={{
+            y: "100%",
+            opacity: 0
+          }}
+          animate={{
+            y: ["-20%", "-100%"],
+            opacity: [0, 0.2, 0]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 1
+          }}
+          style={{
+            left: `${(i / 8) * 100}%`,
+            width: "200%"
+          }}
+        />
+      ))}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

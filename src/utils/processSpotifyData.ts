@@ -28,6 +28,7 @@ interface SpotifyTrack {
     bingeHour: { hour: Date; count: number };
     topArtistsByTime: { name: string; msPlayed: number; percentage: number }[];
     newDiscoveries: { name: string; artist: string; date: Date; coverArt?: string }[];
+    streamingHistory: any[];
   }
   
   function getSeasonFromMonth(month: number): 'Spring' | 'Summer' | 'Fall' | 'Winter' {
@@ -244,6 +245,7 @@ interface SpotifyTrack {
       bingeHour,
       topArtistsByTime,
       newDiscoveries,
+      streamingHistory: allTracks,
     };
   }
   
@@ -270,5 +272,15 @@ interface SpotifyTrack {
   
     return mostPlayed || { name: '', artist: '', count: 0 };
   }
+  
+  // Add this function to get a random track
+  export const getRandomTrack = (streamingHistory: any[]) => {
+    if (!streamingHistory?.length) return null;
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    return {
+      trackName: randomTrack.trackName,
+      artistName: randomTrack.artistName
+    };
+  };
   
   

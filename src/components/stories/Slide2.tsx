@@ -3,8 +3,20 @@
 import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
 import { Clock, Music, Zap } from "lucide-react"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
+import { getRandomTrack } from "@/utils/processSpotifyData";
 
-export default function Slide2({ totalMinutes }: { totalMinutes: number }) {
+export default function Slide2({ totalMinutes, streamingHistory }: { totalMinutes: number, streamingHistory: any[] }) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []);
+
+  useAudioPreview(searchQuery);
+
   const days = Math.floor(totalMinutes / (60 * 24))
   const lightYears = (totalMinutes * 299792458 * 60) / 9.461e15
 

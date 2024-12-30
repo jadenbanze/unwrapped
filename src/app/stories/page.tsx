@@ -49,6 +49,7 @@ interface TopArtist {
 type SlideComponent = React.ComponentType<any>;
 
 interface ProcessedData {
+  streamingHistory: any[];
   totalMinutesPlayed: number;
   topGenres: string[];
   totalUniqueSongs: number;
@@ -108,10 +109,30 @@ export default function Stories() {
   }
 
   const slides: SlideComponent[] = [
-    Slide1,
-    Slide2,
-    Slide3,
-    Slide4,
+    ({ session, streamingHistory }) => (
+      <Slide1 
+        session={session} 
+        streamingHistory={processedData.streamingHistory} 
+      />
+    ),
+    ({ streamingHistory, totalMinutes }) => (
+      <Slide2 
+        totalMinutes={processedData.totalMinutesPlayed} 
+        streamingHistory={processedData.streamingHistory} 
+      />
+    ),
+    ({ streamingHistory, topGenres }) => (
+      <Slide3 
+        topGenres={processedData.topGenres} 
+        streamingHistory={processedData.streamingHistory}
+      />
+    ),
+    ({ streamingHistory, totalUniqueSongs }) => (
+      <Slide4 
+        totalUniqueSongs={processedData.totalUniqueSongs} 
+        streamingHistory={processedData.streamingHistory}
+      />
+    ),
     Slide5,
     Slide6,
     Slide7,
@@ -121,11 +142,18 @@ export default function Stories() {
     ({ summerSong }: { summerSong: SeasonalTopSong }) => <SummerSlide song={summerSong} />,
     ({ fallSong }: { fallSong: SeasonalTopSong }) => <FallSlide song={fallSong} />,
     ({ winterSong }: { winterSong: SeasonalTopSong }) => <WinterSlide song={winterSong} />,
-    ({ month }: { month: { name: string; minutes: number } }) => <TopMonthSlide month={month} />,
+    ({ streamingHistory }) => (
+      <TopMonthSlide 
+        month={processedData.topListeningMonth} 
+        streamingHistory={processedData.streamingHistory}
+      />
+    ),
     ({ binge }: { binge: BingeProps['hour'] }) => <BingeSlide hour={binge} />,
     ({ artists }: { artists: ArtistLoyaltyProps['artists'] }) => <ArtistLoyaltySlide artists={artists} />,
     ({ discoveries }: { discoveries: DiscoveriesProps['discoveries'] }) => <DiscoveriesSlide discoveries={discoveries} />,
-    Slide10,
+    ({ streamingHistory }) => (
+      <Slide10 streamingHistory={processedData.streamingHistory} />
+    ),
   ];
 
   const nextSlide = () => {

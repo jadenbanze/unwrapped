@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
-import { Disc, Heart, Play, Repeat, Star } from "lucide-react"
+import { Disc, Heart, Play, Repeat, Star, Pause } from "lucide-react"
 import Image from 'next/image'
 import { useState } from 'react'
+import { useAudioPreview } from "@/hooks/useAudioPreview"
 
 interface TopSong {
   name: string;
@@ -57,6 +58,9 @@ export default function Slide5({ topSong }: { topSong: TopSong }) {
       },
     },
   }
+
+  const searchQuery = `${topSong.name} ${topSong.artist}`;
+  useAudioPreview(searchQuery);
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">

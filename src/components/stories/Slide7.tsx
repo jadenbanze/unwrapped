@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
 import { Mic, Music, Star, Trophy, Crown } from "lucide-react"
 import Image from 'next/image'
+import { useAudioPreview } from "@/hooks/useAudioPreview"
 
 interface TopArtist {
   name: string;
@@ -45,6 +46,9 @@ export default function Slide7({ topArtist }: { topArtist: TopArtist }) {
       },
     },
   }
+
+  const searchQuery = `${topArtist.name} popular`;  
+  useAudioPreview(searchQuery);
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">

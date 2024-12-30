@@ -1,12 +1,21 @@
 "use client"
 import { motion } from "framer-motion"
 import Image from 'next/image'
+import { useAudioPreview } from "@/hooks/useAudioPreview";
+import { useMemo } from "react"
 
 interface Slide8Props {
   topArtists: { name: string; image: string }[];
 }
 
 export default function Slide8({ topArtists }: Slide8Props) {
+  const searchQuery = useMemo(() => {
+    const randomIndex = Math.floor(Math.random() * Math.min(5, topArtists.length));
+    const randomArtist = topArtists[randomIndex];
+    return `${randomArtist.name} popular`;
+  }, []);
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
       {/* Animated background particles */}

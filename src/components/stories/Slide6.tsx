@@ -1,6 +1,8 @@
 "use client"
 import { motion } from "framer-motion"
 import Image from 'next/image'
+import { useAudioPreview } from "@/hooks/useAudioPreview"
+import { useMemo } from "react"
 
 interface TopSong {
   name: string;
@@ -10,6 +12,13 @@ interface TopSong {
 }
 
 export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
+  const searchQuery = useMemo(() => {
+    const randomIndex = Math.floor(Math.random() * Math.min(5, topSongs.length));
+    const randomSong = topSongs[randomIndex];
+    return `${randomSong.name} ${randomSong.artist}`;
+  }, []);
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div className="absolute inset-0">

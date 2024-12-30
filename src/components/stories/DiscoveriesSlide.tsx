@@ -2,6 +2,8 @@
 import { motion } from "framer-motion"
 import { Sparkles } from "lucide-react"
 import Image from "next/image"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 export interface DiscoveriesProps {
   discoveries: Array<{
@@ -13,6 +15,15 @@ export interface DiscoveriesProps {
 }
 
 export default function DiscoveriesSlide({ discoveries }: DiscoveriesProps) {
+  const searchQuery = useMemo(() => {
+    if (!discoveries?.length) return '';
+    const randomDiscovery = discoveries[Math.floor(Math.random() * discoveries.length)];
+
+    return `${randomDiscovery.name} ${randomDiscovery.artist}`;
+  }, []); 
+
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div

@@ -1,11 +1,22 @@
 "use client"
 import { motion } from "framer-motion"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 interface Slide4Props {
   totalUniqueSongs: number;
+  streamingHistory: any[];
 }
 
-export default function Slide4({ totalUniqueSongs = 0 }: { totalUniqueSongs: number }) {
+export default function Slide4({ totalUniqueSongs = 0, streamingHistory }: { totalUniqueSongs: number, streamingHistory: any[] }) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []);
+
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       {/* Animated background pattern */}

@@ -1,15 +1,36 @@
 "use client"
 import { motion } from "framer-motion"
 import { Calendar } from "lucide-react"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 interface TopMonthProps {
   month: {
     name: string;
     minutes: number;
-  }
+  };
+  streamingHistory: any[];
 }
 
-export default function TopMonthSlide({ month }: TopMonthProps) {
+export default function TopMonthSlide({ month, streamingHistory }: TopMonthProps) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    // Ensure we have both track name and artist name from the structure
+    if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
+    
+    // Debug information
+    console.log('Selected Track:', {
+      name: randomTrack.trackName,
+      artist: randomTrack.artistName,
+      time: randomTrack.endTime
+    });
+
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []); 
+
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div

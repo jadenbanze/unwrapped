@@ -1,7 +1,27 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { motion } from "framer-motion"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
-export default function Slide1({ session }: { session: any }) {
+export default function Slide1({ session, streamingHistory }: { session: any, streamingHistory: any[] }) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    // Ensure we have both track name and artist name from the structure
+    if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
+    
+    // Debug information
+    console.log('Selected Track:', {
+      name: randomTrack.trackName,
+      artist: randomTrack.artistName,
+      time: randomTrack.endTime
+    });
+
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []); 
+
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div 
