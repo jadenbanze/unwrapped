@@ -1,20 +1,35 @@
 "use client"
 import { motion } from "framer-motion"
 import { Timer } from "lucide-react"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 export interface BingeProps {
   hour: {
     hour: Date;
     count: number;
-  }
+  };
+  streamingHistory: any[];
 }
 
-export default function BingeSlide({ hour }: BingeProps) {
-  const formattedDate = hour?.hour ? new Date(hour.hour).toLocaleDateString() : '';
-  const formattedTime = hour?.hour ? new Date(hour.hour).toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  }) : '';
+export default function BingeSlide({ hour, streamingHistory }: BingeProps) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    // Ensure we have both track name and artist name from the structure
+    if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
+    
+    // Debug information
+    console.log('Selected Track:', {
+      name: randomTrack.trackName,
+      artist: randomTrack.artistName,
+      time: randomTrack.endTime
+    });
+
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []); 
+
+  useAudioPreview(searchQuery);
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
@@ -40,14 +55,10 @@ export default function BingeSlide({ hour }: BingeProps) {
           className="space-y-4"
         >
           <p className="text-4xl font-bold text-primary">
-            {hour?.count || 0} Songs
+            {hour?.count} Songs
           </p>
           <p className="text-lg text-muted-foreground">
-            in a single hour on
-          </p>
-          <p className="text-lg">
-            {formattedDate}<br />
-            {formattedTime}
+            in a single hour
           </p>
         </motion.div>
       </motion.div>

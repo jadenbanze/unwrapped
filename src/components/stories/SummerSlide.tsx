@@ -7,7 +7,7 @@ import { useAudioPreview } from '@/hooks/useAudioPreview'
 const heatWaves = Array.from({ length: 8 });
 
 export default function SummerSlide({ song }: { song: SeasonalTopSong }) {
-  const searchQuery = `${song.name} ${song.artist}`;
+  const searchQuery = song ? `${song.name} ${song.artist}` : '';
   useAudioPreview(searchQuery);
 
   return (

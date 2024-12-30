@@ -148,8 +148,13 @@ export default function Stories() {
         streamingHistory={processedData.streamingHistory}
       />
     ),
-    ({ binge }: { binge: BingeProps['hour'] }) => <BingeSlide hour={binge} />,
-    ({ artists }: { artists: ArtistLoyaltyProps['artists'] }) => <ArtistLoyaltySlide artists={artists} />,
+    ({ binge }: { binge: BingeProps['hour'] }) => <BingeSlide hour={binge} streamingHistory={processedData.streamingHistory} />,
+    ({ streamingHistory }) => (
+      <ArtistLoyaltySlide 
+        artists={processedData.topArtistsByTime} 
+        streamingHistory={processedData.streamingHistory}
+      />
+    ),
     ({ discoveries }: { discoveries: DiscoveriesProps['discoveries'] }) => <DiscoveriesSlide discoveries={discoveries} />,
     ({ streamingHistory }) => (
       <Slide10 streamingHistory={processedData.streamingHistory} />

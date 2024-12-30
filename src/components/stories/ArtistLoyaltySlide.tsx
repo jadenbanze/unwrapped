@@ -2,16 +2,37 @@
 import { motion } from "framer-motion"
 import { Crown } from "lucide-react"
 import Image from "next/image"
+import { useMemo } from "react";
+import { useAudioPreview } from "@/hooks/useAudioPreview";
 
 export interface ArtistLoyaltyProps {
   artists: Array<{
     name: string;
     percentage: number;
     image?: string;
-  }>
+  }>;
+  streamingHistory: any[];
 }
 
-export default function ArtistLoyaltySlide({ artists }: ArtistLoyaltyProps) {
+export default function ArtistLoyaltySlide({ artists, streamingHistory }: ArtistLoyaltyProps) {
+  const searchQuery = useMemo(() => {
+    if (!streamingHistory?.length) return '';
+    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
+    // Ensure we have both track name and artist name from the structure
+    if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
+    
+    // Debug information
+    console.log('Selected Track:', {
+      name: randomTrack.trackName,
+      artist: randomTrack.artistName,
+      time: randomTrack.endTime
+    });
+
+    return `${randomTrack.trackName} ${randomTrack.artistName}`;
+  }, []); 
+
+  useAudioPreview(searchQuery);
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div

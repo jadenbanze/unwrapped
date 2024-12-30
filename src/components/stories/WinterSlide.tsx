@@ -4,8 +4,8 @@ import Image from 'next/image'
 import { SeasonalTopSong } from '@/types/spotify'
 import { useAudioPreview } from "@/hooks/useAudioPreview";
 
-export default function SpringSlide({ song }: { song: SeasonalTopSong }) {
-  const searchQuery = `${song.name} ${song.artist}`;
+export default function WinterSlide({ song }: { song: SeasonalTopSong }) {
+  const searchQuery = song ? `${song.name} ${song.artist}` : '';
   useAudioPreview(searchQuery);
 
   return (
