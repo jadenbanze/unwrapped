@@ -22,6 +22,19 @@ interface SpotifyTrack {
     topGenres: string[];
     morningFavorite: { name: string; artist: string; count: number };
     nightFavorite: { name: string; artist: string; count: number };
+    seasonalTopSongs: { name: string; artist: string; count: number; season: 'Spring' | 'Summer' | 'Fall' | 'Winter' }[];
+    topListeningMonth: { name: string; minutes: number };
+    mostRepeatedInDay: { name: string; artist: string; date: string; count: number };
+    bingeHour: { hour: Date; count: number };
+    topArtistsByTime: { name: string; msPlayed: number; percentage: number }[];
+    newDiscoveries: { name: string; artist: string; date: Date; coverArt?: string }[];
+  }
+  
+  function getSeasonFromMonth(month: number): 'Spring' | 'Summer' | 'Fall' | 'Winter' {
+    if (month >= 3 && month <= 5) return 'Spring';
+    if (month >= 6 && month <= 8) return 'Summer';
+    if (month >= 9 && month <= 11) return 'Fall';
+    return 'Winter';
   }
   
   export function processSpotifyData(tracks: SpotifyTrack[]): ProcessedData {
@@ -88,6 +101,124 @@ interface SpotifyTrack {
       .map(({ name, count }) => ({ name, count }))
       .slice(0, 5);
   
+    // Process seasonal top songs
+    const seasonalSongs: Record<string, { [key: string]: number }> = {
+      Spring: {},
+      Summer: {},
+      Fall: {},
+      Winter: {},
+    };
+  
+    allTracks.forEach((track) => {
+      const date = new Date(track.endTime);
+      const season = getSeasonFromMonth(date.getMonth());
+      const songKey = `${track.trackName}|||${track.artistName}`;
+      
+      seasonalSongs[season][songKey] = (seasonalSongs[season][songKey] || 0) + 1;
+    });
+  
+    const topSeasonalSongs = Object.entries(seasonalSongs).map(([season, songs]) => {
+      const topSong = Object.entries(songs)
+        .sort(([, a], [, b]) => b - a)[0];
+      
+      if (!topSong) return null;
+  
+      const [songInfo, count] = topSong;
+      const [name, artist] = songInfo.split('|||');
+  
+      return {
+        name,
+        artist,
+        count,
+        season: season as 'Spring' | 'Summer' | 'Fall' | 'Winter'
+      };
+    }).filter((song): song is { name: string; artist: string; count: number; season: 'Spring' | 'Summer' | 'Fall' | 'Winter' } => song !== null);
+  
+    // Add to your existing calculations
+    const monthlyListening = allTracks.reduce((acc, track) => {
+      const month = new Date(track.endTime).getMonth();
+      acc[month] = (acc[month] || 0) + track.msPlayed;
+      return acc;
+    }, {} as Record<number, number>);
+  
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+  
+    const topMonth = Object.entries(monthlyListening)
+      .sort(([, a], [, b]) => b - a)[0];
+  
+    const topListeningMonth = {
+      name: monthNames[Number(topMonth[0])],
+      minutes: Math.round(topMonth[1] / (1000 * 60))
+    };
+  
+    // Most repeated song in a single day
+    const songsByDay = allTracks.reduce((acc, track) => {
+      const day = new Date(track.endTime).toDateString();
+      const key = `${track.trackName}|||${track.artistName}|||${day}`;
+      acc[key] = {
+        name: track.trackName,
+        artist: track.artistName,
+        date: day,
+        count: (acc[key]?.count || 0) + 1
+      };
+      return acc;
+    }, {} as Record<string, { name: string; artist: string; date: string; count: number }>);
+  
+    const mostRepeatedInDay = Object.values(songsByDay)
+      .sort((a, b) => b.count - a.count)[0];
+  
+    // Binge listening (most songs in an hour)
+    const songsByHour = allTracks.reduce((acc, track) => {
+      const hourDate = new Date(track.endTime);
+      const hourKey = hourDate.toISOString().slice(0, 13);
+      
+      acc[hourKey] = {
+        hour: hourDate,
+        count: (acc[hourKey]?.count || 0) + 1
+      };
+      return acc;
+    }, {} as Record<string, { hour: Date; count: number }>);
+  
+    const bingeHour = Object.values(songsByHour)
+      .sort((a, b) => b.count - a.count)[0];
+  
+    // Artist loyalty (% of total listening time)
+    const artistTimeShare = allTracks.reduce((acc, track) => {
+      acc[track.artistName] = {
+        name: track.artistName,
+        msPlayed: (acc[track.artistName]?.msPlayed || 0) + track.msPlayed,
+      };
+      return acc;
+    }, {} as Record<string, { name: string; msPlayed: number; image?: string }>);
+  
+    const topArtistsByTime = Object.values(artistTimeShare)
+      .map(artist => ({
+        ...artist,
+        percentage: (artist.msPlayed / totalMsPlayed) * 100
+      }))
+      .sort((a, b) => b.percentage - a.percentage)
+      .slice(0, 3);
+  
+    // New vs Familiar
+    const firstListens = allTracks.reduce((acc, track) => {
+      const key = `${track.trackName}|||${track.artistName}`;
+      if (!acc[key]) {
+        acc[key] = {
+          name: track.trackName,
+          artist: track.artistName,
+          date: new Date(track.endTime),
+        };
+      }
+      return acc;
+    }, {} as Record<string, { name: string; artist: string; date: Date; coverArt?: string }>);
+  
+    const newDiscoveries = Object.values(firstListens)
+      .sort((a, b) => b.date.getTime() - a.date.getTime())
+      .slice(0, 5);
+  
     // Return the processed data
     return {
       topArtists,
@@ -107,6 +238,12 @@ interface SpotifyTrack {
         return hour >= 5 && hour < 12;
       })),
       nightFavorite: getMostPlayed(allTracks.filter(track => new Date(track.endTime).getHours() >= 20 || new Date(track.endTime).getHours() < 5)),
+      seasonalTopSongs: topSeasonalSongs,
+      topListeningMonth,
+      mostRepeatedInDay,
+      bingeHour,
+      topArtistsByTime,
+      newDiscoveries,
     };
   }
   
