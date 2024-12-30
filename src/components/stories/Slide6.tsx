@@ -6,6 +6,7 @@ interface TopSong {
   name: string;
   artist: string;
   count: number;
+  coverArt?: string;
 }
 
 export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
@@ -46,6 +47,16 @@ export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
             whileHover={{ scale: 1.05 }}
             className="flex flex-col items-center"
           >
+            {song.coverArt && (
+              <div className="relative w-24 h-24 mb-2">
+                <Image
+                  src={song.coverArt}
+                  alt={`${song.name} cover`}
+                  fill
+                  className="rounded-lg object-cover"
+                />
+              </div>
+            )}
             <p className="text-sm font-bold">{song.name}</p>
             <p className="text-xs">{song.artist}</p>
             <p className="text-xs text-primary">{song.count} plays</p>

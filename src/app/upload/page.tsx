@@ -11,6 +11,7 @@ import { processSpotifyData } from '@/utils/processSpotifyData'
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { fetchMetadata } from '@/utils/fetchMetadata'
 
 export default function Upload() {
   const { data: session, status } = useSession()
@@ -59,13 +60,52 @@ export default function Upload() {
 
       // Process the data
       const processed = processSpotifyData(allTracks);
-      console.log('Processed data:', processed); // Debug log
 
-      // Store the processed data
-      localStorage.setItem('spotifyData', JSON.stringify(processed));
-      
-      toast.success('Data processed successfully!');
-      router.push('/stories');
+      // Prepare items for metadata fetch
+      const metadataItems = [
+        ...processed.topSongs.map(song => ({
+          type: 'track' as const,
+          name: song.name,
+          artist: song.artist
+        })),
+        ...processed.topArtists.map(artist => ({
+          type: 'artist' as const,
+          name: artist.name
+        }))
+      ];
+
+      try {
+        const metadata = await fetchMetadata(metadataItems);
+        
+        // Update processed data with metadata
+        const songsWithMetadata = processed.topSongs.map((song, index) => ({
+          ...song,
+          coverArt: metadata[index].coverArt || ''
+        }));
+
+        const artistsWithMetadata = processed.topArtists.map((artist, index) => ({
+          ...artist,
+          image: metadata[index + processed.topSongs.length].image || ''
+        }));
+
+        const processedWithMetadata = {
+          ...processed,
+          topSongs: songsWithMetadata,
+          topArtists: artistsWithMetadata
+        };
+
+        // Store the processed data with metadata
+        localStorage.setItem('spotifyData', JSON.stringify(processedWithMetadata));
+        
+        toast.success('Data processed successfully!');
+        router.push('/stories');
+      } catch (error) {
+        console.error('Error fetching metadata:', error);
+        toast.error('Error fetching artwork. Some images may be missing.');
+        // Store the data anyway, just without metadata
+        localStorage.setItem('spotifyData', JSON.stringify(processed));
+        router.push('/stories');
+      }
     } catch (error) {
       console.error('Error processing files:', error);
       toast.error('Error processing files. Please ensure all files are valid Spotify streaming history.');

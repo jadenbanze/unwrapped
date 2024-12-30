@@ -6,7 +6,7 @@ interface SpotifyTrack {
   }
   
   interface ProcessedData {
-    topArtists: { name: string; count: number }[];
+    topArtists: { name: string; count: number; image?: string }[];
     topSongs: { 
       name: string;
       artist: string;
@@ -14,6 +14,7 @@ interface SpotifyTrack {
       msPlayed: number;
       playCount: number;
       firstListenDate: string;
+      coverArt?: string;
     }[];
     totalMinutesPlayed: number;
     totalSongsPlayed: number;
