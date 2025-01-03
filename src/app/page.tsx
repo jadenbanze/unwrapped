@@ -34,8 +34,8 @@ export default function Home() {
   const { data: session } = useSession();
 
   return (
-    <div className="min-h-[calc(100vh-7rem)] bg-gradient-to-br from-background to-primary/10 flex flex-col">
-      <header className="py-4">
+    <div className="h-[calc(100vh-3.5rem)] bg-gradient-to-br from-background to-primary/10 flex flex-col">
+      <div className="flex-1 flex flex-col justify-center gap-8 px-4">
         <motion.div
           className="text-center"
           variants={containerVariants}
@@ -43,13 +43,13 @@ export default function Home() {
           animate="visible"
         >
           <motion.h2
-            className="text-4xl sm:text-5xl lg:text-6xl font-regular tracking-tight text-primary font-poppins mt-20"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-regular tracking-tight text-primary font-poppins"
             variants={itemVariants}
           >
             Your <span className="font-bold">2024</span> in music
           </motion.h2>
           <motion.p
-            className="mt-4 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto"
+            className="mt-4 text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto"
             variants={itemVariants}
           >
             Let's be honest, Spotify dropped the ball this year with Wrapped. Let's fix that.
@@ -57,71 +57,63 @@ export default function Home() {
           <motion.div variants={itemVariants}>
             <Button 
               size="lg" 
-              className="mt-6 px-8 py-6 text-lg rounded-md"
+              className="mt-6 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-md"
               onClick={() => signIn('spotify', { callbackUrl: '/upload' })}
             >
               {session ? 'View Your Unwrapped' : 'Connect with Spotify'}
             </Button>
           </motion.div>
         </motion.div>
-      </header>
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto w-full px-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          layout
         >
-          <motion.div variants={itemVariants} layout>
-            <Card className="flex flex-col h-40">
+          <motion.div variants={itemVariants}>
+            <Card className="h-full">
               <CardHeader className="pb-2">
                 <CardTitle>
-                  <Download className="inline mr-2" /> Step 1
+                  <Download className="inline mr-2 h-5 w-5" /> Step 1
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow pb-2">
+              <CardContent className="space-y-2">
                 <p>Download your Spotify data from your settings.</p>
-              </CardContent>
-              <CardFooter>
                 <footer className="text-sm text-muted-foreground">Estimated time: 3-5 days</footer>
-              </CardFooter>
+              </CardContent>
             </Card>
           </motion.div>
           
-          <motion.div variants={itemVariants} layout>
-            <Card className="flex flex-col h-40">
+          <motion.div variants={itemVariants}>
+            <Card className="h-full">
               <CardHeader className="pb-2">
                 <CardTitle>
-                  <Upload className="inline mr-2" /> Step 2
+                  <Upload className="inline mr-2 h-5 w-5" /> Step 2
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow pb-2">
+              <CardContent className="space-y-2">
                 <p>Upload your streaming data.</p>
-              </CardContent>
-              <CardFooter>
                 <footer className="text-sm text-muted-foreground">Almost there...</footer>
-              </CardFooter>
+              </CardContent>
             </Card>
           </motion.div>
           
-          <motion.div variants={itemVariants} layout>
-            <Card className="flex flex-col h-40">
+          <motion.div variants={itemVariants}>
+            <Card className="h-full">
               <CardHeader className="pb-2">
                 <CardTitle>
-                  <Star className="inline mr-2" /> Step 3
+                  <Star className="inline mr-2 h-5 w-5" /> Step 3
                 </CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow pb-2">
+              <CardContent className="space-y-2">
                 <p>Generate your Unwrapped!</p>
-              </CardContent>
-              <CardFooter>
                 <footer className="text-sm text-muted-foreground">Share your Unwrapped with your friends!</footer>
-              </CardFooter>
+              </CardContent>
             </Card>
           </motion.div>
         </motion.div>
-      </main>
+      </div>
     </div>
   )
 }

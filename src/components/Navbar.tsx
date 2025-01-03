@@ -34,16 +34,19 @@ const UserMenu = () => {
   const isMounted = useIsMounted()
 
   if (!isMounted) {
-    return <Skeleton className="h-10 w-10 rounded-full" />
+    return <Skeleton className="h-8 w-8 md:h-10 md:w-10 rounded-full" />
   }
 
   if (status === "loading") {
-    return <Skeleton className="h-10 w-10 rounded-full" />
+    return <Skeleton className="h-8 w-8 md:h-10 md:w-10 rounded-full" />
   }
 
   if (!session) {
     return (
-      <Button onClick={() => signIn('spotify', { callbackUrl: '/upload' })}>
+      <Button 
+        onClick={() => signIn('spotify', { callbackUrl: '/upload' })}
+        className="text-sm md:text-base px-3 md:px-4"
+      >
         Get Started
       </Button>
     )
@@ -52,7 +55,7 @@ const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer">
+        <Avatar className="h-8 w-8 md:h-10 md:w-10 cursor-pointer">
           <AvatarImage 
             src={session.user?.image ?? "https://images.unsplash.com/broken"} 
             alt={session.user?.name ?? "User avatar"} 
@@ -74,18 +77,18 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center">
-        <NextLink href="/" className="text-2xl font-poppins font-bold">
+      <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4 md:px-8">
+        <NextLink href="/" className="text-xl md:text-2xl font-poppins font-bold truncate">
           Unwrapped
         </NextLink>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Info className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 md:h-9 md:w-9">
+                <Info className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Help & FAQs</DialogTitle>
               </DialogHeader>
@@ -146,13 +149,13 @@ export function Navbar() {
                   <AccordionTrigger>I can&apos;t get past the upload step</AccordionTrigger>
                   <AccordionContent>
                     If you can&apos;t get past the upload step, it&apos;s probably because you haven&apos;t uploaded the proper files.
-                    For example, you need to upload all the files that start with &quot;StreamingHistory_music&quot;. I had 3 files for my 2024 data, but you might have more or less depending on your listening history.
+                    For example, you need to upload all the files that start with &quot;StreamingHistory_music&quot;. I had 4 files for my 2024 data, but you might have more or less depending on your listening history.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
             </DialogContent>
           </Dialog>
-          {isMounted ? <ModeToggle /> : <Skeleton className="h-9 w-9" />}
+          {isMounted ? <ModeToggle /> : <Skeleton className="h-8 w-8 md:h-9 md:w-9" />}
           <UserMenu />
         </div>
       </div>
