@@ -92,6 +92,7 @@ export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
                 <Image
                   src={song.coverArt || '/placeholder.jpg'}
                   alt={song.name}
+                  sizes="40px"
                   width={40}
                   height={40}
                   className="rounded"

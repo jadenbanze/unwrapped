@@ -89,7 +89,7 @@ export default function Stories() {
     const data = localStorage.getItem('spotifyData')
     if (data) {
       const parsedData = JSON.parse(data)
-      console.log(parsedData)
+      //console.log(parsedData)
       setProcessedData(parsedData)
     }
   }, [])

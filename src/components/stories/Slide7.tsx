@@ -103,6 +103,7 @@ export default function Slide7({ topArtist }: { topArtist: TopArtist }) {
           <Image
             src={topArtist.image}
             alt={topArtist.name}
+            sizes="200px"
             width={200}
             height={200}
             className="rounded-full mb-6 shadow-lg border-4 border-primary/20"

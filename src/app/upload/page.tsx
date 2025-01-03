@@ -8,7 +8,7 @@ import { FileJson } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import { processSpotifyData } from '@/utils/processSpotifyData'
-import { toast } from "react-hot-toast"
+import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { fetchMetadata } from '@/utils/fetchMetadata'
@@ -49,14 +49,44 @@ export default function Upload() {
       const allTracks = await Promise.all(
         files.map(async (file) => {
           const text = await file.text();
-          const data = JSON.parse(text);
-          console.log(`Parsed ${file.name}:`, data.length, 'tracks'); // Debug log
-          return data;
+          try {
+            const data = JSON.parse(text);
+            // Validate the structure of each track in the data
+            if (!Array.isArray(data) || !data.every(track => 
+              track.endTime && 
+              track.artistName && 
+              track.trackName && 
+              typeof track.msPlayed === 'number'
+            )) {
+              toast.error(`${file.name} is not a valid Spotify streaming history file`, {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+              throw new Error(`${file.name} is not a valid Spotify streaming history file`);
+            }
+            return data;
+          } catch (error) {
+            toast.error(`${file.name} is not a valid Spotify streaming history file`, {
+              position: "bottom-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+            throw error;
+          }
         })
       ).then(fileContents => fileContents.flat());
 
-      // Log the combined data for debugging
-      console.log('Total tracks across all files:', allTracks.length);
 
       // Process the data
       const processed = processSpotifyData(allTracks);
@@ -133,6 +163,7 @@ export default function Upload() {
     } catch (error) {
       console.error('Error processing files:', error);
       toast.error('Error processing files. Please ensure all files are valid Spotify streaming history.');
+      return;
     }
   };
 
@@ -148,10 +179,10 @@ export default function Upload() {
             <li>Scroll down to &quot;Download your data&quot;</li>
             <li>Request your account data (not the extended streaming history)</li>
             <li>Confirm in your email that you want to receive the data.</li>
-            <li>This will take up to 5 days. <a href="https://venmo.com/u/Jaden-Banze" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline underline-offset-4">Grab a coffee for us in the meantime.</a></li>
+            <li>This could take up to 5 days. <a href="https://venmo.com/u/Jaden-Banze" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline underline-offset-4">Grab a coffee for us in the meantime.</a></li>
             <li>Once received, extract the ZIP file</li>
-            <li>Find your streaming history JSON files (they start with &quot;StreamingHistory&quot;)</li>
-            <li>Upload those files below</li>
+            <li>Find your streaming history JSON files (they start with &quot;StreamingHistory_music&quot;)</li>
+            <li>Upload ALL the files. You could have multiple files depending your listening</li>
           </ol>
         </CardContent>
       </Card>
