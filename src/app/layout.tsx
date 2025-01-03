@@ -17,8 +17,26 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: "Unwrapped",
-  description: "Discover your true music taste with Unwrapped, a better Spotify Wrapped alternative.",
+  title: "Unwrapped - Your 2024 in Music",
+  description: "Discover your 2024 taste in music!",
+  openGraph: {
+    title: "Unwrapped - Your 2024 in Music",
+    description: "Check out my 2024 music wrapped!",
+    images: [
+      {
+        url: "https://unwrapped2024.vercel.app/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Unwrapped 2024",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Unwrapped - Your 2024 in Music",
+    description: "Check out my 2024 music wrapped!",
+    images: ["https://unwrapped2024.vercel.app/og-image.jpg"],
+  },
 }
 
 export default function RootLayout({
