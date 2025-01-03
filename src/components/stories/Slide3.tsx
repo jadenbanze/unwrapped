@@ -71,7 +71,7 @@ export default function Slide3({ topGenres, streamingHistory }: Slide3Props) {
           variants={itemVariants}
           className="text-2xl font-bold mb-8"
         >
-          Your top genres this year
+          Your top 5 recent genres
         </motion.h2>
         <div className="text-left space-y-3">
           {topGenres.map((genre, index) => (

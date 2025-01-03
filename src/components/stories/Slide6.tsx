@@ -17,24 +17,34 @@ export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
     const randomSong = topSongs[randomIndex];
     return `${randomSong.name} ${randomSong.artist}`;
   }, []);
+
   useAudioPreview(searchQuery);
+
+  // Generate random shapes once using useMemo
+  const shapes = useMemo(() => 
+    Array.from({ length: 6 }).map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      isCircle: Math.random() > 0.5
+    })),
+  []);
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div className="absolute inset-0">
-        {Array.from({ length: 6 }).map((_, i) => (
+        {shapes.map((shape, i) => (
           <motion.div
             key={i}
             className="absolute w-32 h-32 border-2 border-primary/20"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              borderRadius: Math.random() > 0.5 ? '50%' : '0%'
+              left: shape.left,
+              top: shape.top,
+              borderRadius: shape.isCircle ? '50%' : '0%'
             }}
             animate={{
               rotate: [0, 360],
               scale: [1, 1.2, 1],
-              borderRadius: Math.random() > 0.5 ? ['0%', '50%', '0%'] : ['50%', '0%', '50%']
+              borderRadius: shape.isCircle ? ['0%', '50%', '0%'] : ['50%', '0%', '50%']
             }}
             transition={{
               duration: 10 + Math.random() * 5,

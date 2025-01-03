@@ -16,20 +16,29 @@ export interface ArtistLoyaltyProps {
 
 export default function ArtistLoyaltySlide({ artists, streamingHistory }: ArtistLoyaltyProps) {
   const searchQuery = useMemo(() => {
-    if (!streamingHistory?.length) return '';
-    const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
-    // Ensure we have both track name and artist name from the structure
+    if (!streamingHistory?.length || !artists?.length) return '';
+    
+    // Get all tracks from the streaming history that match any of the top artists
+    const artistTracks = streamingHistory.filter(track => 
+      artists.some(artist => 
+        track.artistName?.toLowerCase() === artist.name?.toLowerCase()
+      )
+    );
+
+    if (!artistTracks.length) return '';
+    
+    const randomTrack = artistTracks[Math.floor(Math.random() * artistTracks.length)];
     if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
     
     // Debug information
-    console.log('Selected Track:', {
+    console.log('Selected Track from Top Artists:', {
       name: randomTrack.trackName,
       artist: randomTrack.artistName,
       time: randomTrack.endTime
     });
 
     return `${randomTrack.trackName} ${randomTrack.artistName}`;
-  }, []); 
+  }, [artists, streamingHistory]); 
 
   useAudioPreview(searchQuery);
 
