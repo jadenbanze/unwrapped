@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
-import { Clock, Music, Zap } from "lucide-react"
+import { Clock, Music, Zap, Timer } from "lucide-react"
 import { useMemo } from "react";
 import { useAudioPreview } from "@/hooks/useAudioPreview";
 import { getRandomTrack } from "@/utils/processSpotifyData";
@@ -42,56 +42,67 @@ export default function Slide2({ totalMinutes, streamingHistory }: { totalMinute
     },
   }
 
+  const titleWords = "This year, you spent".split(" ");
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
       {/* Floating Objects */}
       <FloatingObject className="top-10 left-10" delay={0}>
         <Clock className="w-12 h-12 text-primary/20" />
       </FloatingObject>
-      <FloatingObject className="top-20 right-20" delay={1}>
-        <Music className="w-16 h-16 text-primary/20" />
-      </FloatingObject>
-      <FloatingObject className="bottom-20 left-20" delay={2}>
-        <Zap className="w-14 h-14 text-primary/20" />
+      <FloatingObject className="bottom-32 right-16" delay={1.8}>
+        <Timer className="w-12 h-12 text-primary/20" />
       </FloatingObject>
 
-      {/* Content with Animations */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="z-10"
       >
-        <motion.h2 
-          variants={itemVariants}
-          className="text-2xl font-bold mb-4"
-        >
-          This year, you listened to
-        </motion.h2>
-        
+        <div className="flex gap-2 justify-center flex-wrap mb-6">
+          {titleWords.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.2,
+                duration: 0.3
+              }}
+              className="text-2xl font-bold"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </div>
+
         <motion.p 
-          variants={itemVariants}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: titleWords.length * 0.2 + 0.3 }}
           className="text-4xl font-bold text-primary mb-4"
         >
           {totalMinutes.toLocaleString()} minutes
         </motion.p>
-        
-        <motion.div variants={itemVariants}>
-          <p className="text-lg mb-2">That's {days} days</p>
-        </motion.div>
-        
-        <motion.div variants={itemVariants}>
-          <p className="text-lg mb-4">and {lightYears.toFixed(10)} light years</p>
-        </motion.div>
-        
-        <motion.span 
-          variants={itemVariants}
-          className="text-6xl inline-block"
-          whileHover={{ scale: 1.2, rotate: [0, -10, 10, -10, 0] }}
-          transition={{ duration: 0.5 }}
+
+        <motion.p 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: titleWords.length * 0.2 + 0.5 }}
+          className="text-lg mb-2"
         >
-          😱
-        </motion.span>
+          That's {days} days of music!
+        </motion.p>
+
+        <motion.p 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: titleWords.length * 0.2 + 0.7 }}
+          className="text-sm text-muted-foreground"
+        >
+          Your music traveled {lightYears.toFixed(2)} light years
+        </motion.p>
       </motion.div>
     </div>
   )

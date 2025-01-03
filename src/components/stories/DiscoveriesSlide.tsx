@@ -24,6 +24,8 @@ export default function DiscoveriesSlide({ discoveries }: DiscoveriesProps) {
 
   useAudioPreview(searchQuery);
 
+  const words = "Your Recent Favorites".split(" ");
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
       <motion.div
@@ -39,7 +41,21 @@ export default function DiscoveriesSlide({ discoveries }: DiscoveriesProps) {
           <Sparkles className="w-16 h-16 text-primary mx-auto mb-4" />
         </motion.div>
 
-        <h2 className="text-2xl font-bold">Recent Discoveries</h2>
+        <h2 className="text-2xl font-bold flex gap-2 justify-center flex-wrap">
+          {words.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.2 + 0.5,
+                duration: 0.3
+              }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h2>
         
         <div className="space-y-4">
           {discoveries.map((song, index) => (
@@ -47,7 +63,7 @@ export default function DiscoveriesSlide({ discoveries }: DiscoveriesProps) {
               key={song.name}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.2 }}
+              transition={{ delay: index * 0.2 + words.length * 0.2 }}
               className="flex items-center gap-3"
             >
               {song.coverArt && (

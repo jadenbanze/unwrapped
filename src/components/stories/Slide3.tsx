@@ -3,22 +3,44 @@
 import { motion } from "framer-motion"
 import { FloatingObject } from "@/components/FloatingObject"
 import { Headphones, Music2, Radio, Mic2, Piano } from "lucide-react"
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useAudioPreview } from "@/hooks/useAudioPreview";
+import { useMemo } from "react";
 
 interface Slide3Props {
-  topGenres: string[];
   streamingHistory: any[];
 }
 
-export default function Slide3({ topGenres, streamingHistory }: Slide3Props) {
+export default function Slide3({ streamingHistory }: Slide3Props) {
+  const [topGenres, setTopGenres] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const searchQuery = useMemo(() => {
     if (!streamingHistory?.length) return '';
     const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
     return `${randomTrack.trackName} ${randomTrack.artistName}`;
-  }, []);
+  }, [streamingHistory]);
 
   useAudioPreview(searchQuery);
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch('/api/spotify/genres');
+        if (!response.ok) throw new Error('Failed to fetch genres');
+        const data = await response.json();
+        setTopGenres(data.genres);
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to load genres');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGenres();
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -41,6 +63,8 @@ export default function Slide3({ topGenres, streamingHistory }: Slide3Props) {
       },
     },
   }
+
+  const titleWords = "Your top 5 recent genres".split(" ");
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
@@ -67,17 +91,33 @@ export default function Slide3({ topGenres, streamingHistory }: Slide3Props) {
         animate="visible"
         className="z-10"
       >
-        <motion.h2 
-          variants={itemVariants}
-          className="text-2xl font-bold mb-8"
-        >
-          Your top 5 recent genres
-        </motion.h2>
+        <div className="flex gap-2 justify-center flex-wrap mb-8">
+          {titleWords.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.2,
+                duration: 0.3
+              }}
+              className="text-2xl font-bold"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </div>
+
         <div className="text-left space-y-3">
           {topGenres.map((genre, index) => (
             <motion.div
               key={index}
-              variants={itemVariants}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ 
+                delay: (titleWords.length * 0.2) + (index * 0.2),
+                duration: 0.5 
+              }}
               whileHover={{ scale: 1.05, x: 10 }}
               className="flex items-center space-x-2"
             >

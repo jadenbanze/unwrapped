@@ -16,11 +16,12 @@ export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
     const randomIndex = Math.floor(Math.random() * Math.min(5, topSongs.length));
     const randomSong = topSongs[randomIndex];
     return `${randomSong.name} ${randomSong.artist}`;
-  }, []);
+  }, [topSongs]);
 
   useAudioPreview(searchQuery);
 
-  // Generate random shapes once using useMemo
+  const titleWords = "Your top songs were".split(" ");
+
   const shapes = useMemo(() => 
     Array.from({ length: 6 }).map(() => ({
       left: `${Math.random() * 100}%`,
@@ -55,55 +56,55 @@ export default function Slide6({ topSongs }: { topSongs: TopSong[] }) {
         ))}
       </motion.div>
 
-      <h2 className="text-2xl font-bold mb-8 z-10">But you also loved</h2>
-      <div className="flex flex-col gap-4 z-10">
-        {topSongs.map((song, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 }}
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center group gap-4 w-full max-w-md pl-12 relative"
-          >
-            {/* Ranking number */}
-            <div className="absolute left-0 font-bold text-lg text-primary">
-              #{index + 1}
-            </div>
-
-            <motion.div 
-              className="relative"
-              whileHover={{ rotate: [0, -5, 5, 0] }}
-              transition={{ duration: 0.5 }}
+      <motion.div className="z-10 space-y-6">
+        <div className="flex gap-2 justify-center flex-wrap mb-6">
+          {titleWords.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.2,
+                duration: 0.3
+              }}
+              className="text-2xl font-bold"
             >
-              <div className="relative w-16 h-16">
-                {song.coverArt && (
-                  <Image
-                    src={song.coverArt}
-                    alt={`${song.name} cover`}
-                    fill
-                    className="rounded-lg object-cover shadow-lg"
-                  />
-                )}
-                {/* Glow effect on hover */}
-                <motion.div
-                  className="absolute inset-0 rounded-lg bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{
-                    filter: 'blur(8px)',
-                    transform: 'scale(1.1)',
-                  }}
+              {word}
+            </motion.span>
+          ))}
+        </div>
+
+        <div className="space-y-4">
+          {topSongs.slice(0, 5).map((song, index) => (
+            <motion.div
+              key={song.name}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ 
+                delay: titleWords.length * 0.2 + (index * 0.2),
+                duration: 0.5 
+              }}
+              whileHover={{ scale: 1.05, x: 10 }}
+              className="flex items-center gap-4"
+            >
+              <span className="text-primary font-bold">{index + 1}</span>
+              <div className="flex items-center gap-3">
+                <Image
+                  src={song.coverArt || '/placeholder.jpg'}
+                  alt={song.name}
+                  width={40}
+                  height={40}
+                  className="rounded"
                 />
+                <div className="text-left">
+                  <p className="font-bold">{song.name}</p>
+                  <p className="text-sm text-muted-foreground">{song.artist}</p>
+                </div>
               </div>
             </motion.div>
-
-            <div className="flex flex-col items-start">
-              <p className="text-sm font-bold">{song.name}</p>
-              <p className="text-xs text-muted-foreground">{song.artist}</p>
-              <p className="text-xs text-primary">{song.count} plays</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   )
 }

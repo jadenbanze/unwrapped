@@ -203,22 +203,55 @@ interface SpotifyTrack {
       .sort((a, b) => b.percentage - a.percentage)
       .slice(0, 3);
   
-    // New vs Familiar
-    const firstListens = allTracks.reduce((acc, track) => {
-      const key = `${track.trackName}|||${track.artistName}`;
-      if (!acc[key]) {
-        acc[key] = {
-          name: track.trackName,
-          artist: track.artistName,
-          date: new Date(track.endTime),
-        };
-      }
-      return acc;
-    }, {} as Record<string, { name: string; artist: string; date: Date; coverArt?: string }>);
-  
-    const newDiscoveries = Object.values(firstListens)
-      .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .slice(0, 5);
+    // Calculate recent favorites (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const recentSongStats = allTracks
+      .filter(track => new Date(track.endTime) > thirtyDaysAgo)
+      .reduce((acc, track) => {
+        const key = `${track.trackName}|||${track.artistName}`;
+        if (!acc[key]) {
+          acc[key] = {
+            name: track.trackName,
+            artist: track.artistName,
+            count: 0,
+            msPlayed: 0,
+            firstPlay: new Date(track.endTime),
+            lastPlay: new Date(track.endTime)
+          };
+        }
+        acc[key].count += 1;
+        acc[key].msPlayed += track.msPlayed;
+        acc[key].lastPlay = new Date(track.endTime);
+        return acc;
+      }, {} as Record<string, {
+        name: string;
+        artist: string;
+        count: number;
+        msPlayed: number;
+        firstPlay: Date;
+        lastPlay: Date;
+      }>);
+
+    const newDiscoveries = Object.values(recentSongStats)
+      // Filter out songs with less than 2 plays or less than 1 minute total play time
+      .filter(song => song.count >= 2 && song.msPlayed >= 60000)
+      // Sort by a weighted score of recency and play count
+      .sort((a, b) => {
+        const scoreA = (a.count * 0.6) + (a.msPlayed * 0.4);
+        const scoreB = (b.count * 0.6) + (b.msPlayed * 0.4);
+        return scoreB - scoreA;
+      })
+      .slice(0, 5)
+      .map(song => ({
+        name: song.name,
+        artist: song.artist,
+        date: song.lastPlay,
+        playCount: song.count,
+        msPlayed: song.msPlayed,
+        coverArt: undefined // Will be populated by the Spotify API later
+      }));
   
     // Return the processed data
     return {

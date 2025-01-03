@@ -7,20 +7,13 @@ export default function Slide1({ session, streamingHistory }: { session: any, st
   const searchQuery = useMemo(() => {
     if (!streamingHistory?.length) return '';
     const randomTrack = streamingHistory[Math.floor(Math.random() * streamingHistory.length)];
-    // Ensure we have both track name and artist name from the structure
     if (!randomTrack?.endTime || !randomTrack?.artistName || !randomTrack?.trackName) return '';
-    
-    // Debug information
-    console.log('Selected Track:', {
-      name: randomTrack.trackName,
-      artist: randomTrack.artistName,
-      time: randomTrack.endTime
-    });
-
     return `${randomTrack.trackName} ${randomTrack.artistName}`;
   }, []); 
 
   useAudioPreview(searchQuery);
+
+  const words = `Hello ${session?.user?.name || "there"}!`.split(" ");
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative">
@@ -34,14 +27,43 @@ export default function Slide1({ session, streamingHistory }: { session: any, st
         <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full border-2 border-primary/40" />
       </motion.div>
       
-      <Avatar className="w-24 h-24 mb-4 z-10">
-        <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || "User"} />
-        <AvatarFallback>{session?.user?.name?.[0] || "U"}</AvatarFallback>
-      </Avatar>
-      <h2 className="text-2xl font-bold mb-4">
-        Hello {session?.user?.name || "there"}!
-      </h2>
-      <p className="text-lg">Let's unwrap your music in 2024...</p>
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="mb-4 z-10"
+      >
+        <Avatar className="w-24 h-24">
+          <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || "User"} />
+          <AvatarFallback>{session?.user?.name?.[0] || "U"}</AvatarFallback>
+        </Avatar>
+      </motion.div>
+
+      <div className="flex gap-2 justify-center flex-wrap mb-4">
+        {words.map((word, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: i * 0.2 + 0.5,
+              duration: 0.3
+            }}
+            className="text-2xl font-bold"
+          >
+            {word}
+          </motion.span>
+        ))}
+      </div>
+
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: words.length * 0.2 + 0.7 }}
+        className="text-lg"
+      >
+        Let's unwrap your music in 2024...
+      </motion.p>
     </div>
   )
 }

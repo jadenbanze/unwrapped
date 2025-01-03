@@ -50,6 +50,8 @@ export default function Slide7({ topArtist }: { topArtist: TopArtist }) {
   const searchQuery = `${topArtist.name} popular`;  
   useAudioPreview(searchQuery);
 
+  const words = "Your top artist was".split(" ");
+
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
       {/* Floating Objects */}
@@ -75,16 +77,27 @@ export default function Slide7({ topArtist }: { topArtist: TopArtist }) {
         animate="visible"
         className="z-10 w-full max-w-md mx-auto"
       >
-        <motion.div variants={itemVariants}>
-          <motion.h2 className="text-2xl font-bold mb-6">
-            Your top artist was
-          </motion.h2>
-        </motion.div>
+        <div className="flex gap-2 justify-center flex-wrap mb-6">
+          {words.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.2,
+                duration: 0.3
+              }}
+              className="text-2xl font-bold"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </div>
 
         <motion.div 
           variants={imageVariants}
           whileHover={{ scale: 1.05, rotate: [-2, 2, -2] }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, delay: words.length * 0.2 }}
           className="flex justify-center"
         >
           <Image
@@ -97,13 +110,20 @@ export default function Slide7({ topArtist }: { topArtist: TopArtist }) {
         </motion.div>
 
         <motion.p 
-          variants={itemVariants}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: (words.length * 0.2) + 0.5 }}
           className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60"
         >
           {topArtist.name}
         </motion.p>
 
-        <motion.p variants={itemVariants} className="text-lg text-primary">
+        <motion.p 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: (words.length * 0.2) + 0.7 }}
+          className="text-lg text-primary"
+        >
           {topArtist.count} plays
         </motion.p>
       </motion.div>

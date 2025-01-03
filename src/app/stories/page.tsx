@@ -29,6 +29,7 @@ import DiscoveriesSlide from '@/components/stories/DiscoveriesSlide'
 import type { BingeProps } from '@/components/stories/BingeSlide'
 import type { ArtistLoyaltyProps } from '@/components/stories/ArtistLoyaltySlide'
 import type { DiscoveriesProps } from '@/components/stories/DiscoveriesSlide'
+import SlideOverview from "@/components/stories/SlideOverview";
 
 interface TopSong {
   name: string;
@@ -118,13 +119,12 @@ export default function Stories() {
     ({ streamingHistory, totalMinutes }) => (
       <Slide2 
         totalMinutes={processedData.totalMinutesPlayed} 
-        streamingHistory={processedData.streamingHistory} 
+        streamingHistory={processedData.streamingHistory}
       />
     ),
-    ({ streamingHistory, topGenres }) => (
+    ({ streamingHistory }) => (
       <Slide3 
-        topGenres={processedData.topGenres} 
-        streamingHistory={processedData.streamingHistory}
+        streamingHistory={processedData.streamingHistory} 
       />
     ),
     ({ streamingHistory, totalUniqueSongs }) => (
@@ -159,6 +159,12 @@ export default function Stories() {
     ({ streamingHistory }) => (
       <Slide10 streamingHistory={processedData.streamingHistory} />
     ),
+    ({ session, processedData }) => (
+      <SlideOverview 
+        session={session}
+        processedData={processedData}
+      />
+    )
   ];
 
   const nextSlide = () => {
@@ -219,6 +225,7 @@ export default function Stories() {
                     {...(index === 14 ? { binge: processedData.bingeHour } : {})}
                     {...(index === 15 ? { artists: processedData.topArtistsByTime } : {})}
                     {...(index === 16 ? { discoveries: processedData.newDiscoveries } : {})}
+                    {...(index === slides.length - 1 ? { processedData } : {})}
                   />
                 )
               ))}

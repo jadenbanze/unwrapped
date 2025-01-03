@@ -1,20 +1,21 @@
 "use client"
 import { motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-interface TopArtist {
-  name: string;
-  // Add other properties if needed
-}
-
-interface TopSong {
-  name: string;
-  artist: string;
-  count: number;
-  msPlayed: number;
-  coverArt: string;
-  playCount: number;
-  firstListenDate: string;
+import { useAudioPreview } from "@/hooks/useAudioPreview";
+import { useMemo } from "react";
+import Link from "next/link";
+interface ProcessedData {
+  topArtists: { name: string; count: number; image?: string }[];
+  topSongs: { 
+    name: string;
+    artist: string;
+    count: number;
+    msPlayed: number;
+    playCount: number;
+    firstListenDate: string;
+  }[];
+  totalMinutesPlayed: number;
+  streamingHistory: any[];
 }
 
 export default function SlideOverview({ 
@@ -22,112 +23,126 @@ export default function SlideOverview({
   processedData 
 }: { 
   session: any;
-  processedData: any;
+  processedData: ProcessedData;
 }) {
-  const stats = {
-    topArtists: processedData.topArtists.map((a: TopArtist) => a.name),
-    topSongs: processedData.topSongs.map((s: TopSong) => s.name),
-    minutesListened: processedData.totalMinutesPlayed.toLocaleString(),
-    topGenre: processedData.topGenres[0],
-    topArtistImage: processedData.topArtists[0]?.coverArt || '/placeholder.svg',
-  }
+  const searchQuery = useMemo(() => {
+    if (!processedData?.topSongs?.length) return '';
+    const randomSong = processedData.topSongs[Math.floor(Math.random() * processedData.topSongs.length)];
+    return `${randomSong.name} ${randomSong.artist}`;
+  }, [processedData]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+  useAudioPreview(searchQuery);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5
-      }
-    }
-  }
+  if (!processedData) return null;
+
+  const { topArtists, topSongs, totalMinutesPlayed } = processedData;
+  const titleLine1 = `${session?.user?.name}'s`;
+  const titleLine2 = "2024 Unwrapped";
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6 text-center relative bg-primary/10">
-      <motion.div 
-        className="w-full max-w-md flex flex-col items-center"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Top Avatar */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <Avatar className="w-24 h-24">
-            <AvatarImage src={stats.topArtistImage} alt={stats.topArtists[0]} />
-            <AvatarFallback>{stats.topArtists[0][0]}</AvatarFallback>
+    <div className="h-full flex flex-col items-center justify-center p-6 text-center relative bg-primary/5">
+      <motion.div className="w-full max-w-2xl space-y-8">
+        {/* Header with Avatar */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center gap-6"
+        >
+          <Avatar className="w-20 h-20">
+            <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || "User"} />
+            <AvatarFallback>{session?.user?.name?.[0] || "U"}</AvatarFallback>
           </Avatar>
+          <div className="flex flex-col gap-2 justify-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-2xl font-bold"
+            >
+              {titleLine1}
+            </motion.h2>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-2xl font-bold"
+            >
+              {titleLine2}
+            </motion.h2>
+          </div>
         </motion.div>
 
-        {/* Top Artist Name */}
-        <motion.h2 variants={itemVariants} className="text-2xl font-bold mb-8">
-          {stats.topArtists[0]}
-        </motion.h2>
-
-        {/* Lists Section */}
-        <div className="grid grid-cols-2 gap-x-6 mb-8 w-full">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-2 gap-12 mt-8">
           {/* Top Artists */}
-          <motion.div variants={itemVariants} className="text-left">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="text-left"
+          >
             <h3 className="text-xl font-bold mb-4">Top Artists</h3>
-            {stats.topArtists.map((artist: string, index: number) => (
-              <div key={index} className="flex items-center gap-2 mb-2">
-                <span className="text-primary font-bold">{index + 1}</span>
-                <span className="text-sm">{artist}</span>
-              </div>
-            ))}
+            <div className="space-y-3">
+              {topArtists?.slice(0, 5).map((artist, index) => (
+                <motion.div
+                  key={artist.name}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 + index * 0.1 }}
+                  className="flex items-center gap-3"
+                >
+                  <span className="text-primary font-bold">{index + 1}</span>
+                  <span>{artist.name}</span>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
 
           {/* Top Songs */}
-          <motion.div variants={itemVariants} className="text-left">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="text-left"
+          >
             <h3 className="text-xl font-bold mb-4">Top Songs</h3>
-            {stats.topSongs.map((song: TopSong, index: number) => (
-              <div key={index} className="flex items-center gap-2 mb-2">
-                <span className="text-primary font-bold">{index + 1}</span>
-                <span className="text-sm">{song.name}</span>
-              </div>
-            ))}
+            <div className="space-y-3">
+              {topSongs?.slice(0, 5).map((song, index) => (
+                <motion.div
+                  key={song.name}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 + index * 0.1 }}
+                  className="flex items-center gap-3"
+                >
+                  <span className="text-primary font-bold">{index + 1}</span>
+                  <div>
+                    <span>{song.name}</span>
+                    <span className="text-muted-foreground text-sm block">by {song.artist}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
 
-        {/* Bottom Stats */}
-        <div className="grid grid-cols-2 gap-6 w-full">
-          {/* Minutes Listened */}
-          <motion.div variants={itemVariants} className="text-center">
-            <h3 className="text-lg font-bold mb-2">Minutes Listened</h3>
-            <p className="text-3xl font-bold text-primary">
-              {stats.minutesListened}
+        {/* Footer */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5 }}
+          className="flex justify-between items-end mt-12 text-sm"
+        >
+          <div className="text-left">
+            <p className="text-muted-foreground">Total Minutes Listened</p>
+            <p className="text-xl font-bold text-primary">
+              {totalMinutesPlayed?.toLocaleString()}
             </p>
-          </motion.div>
-
-          {/* Top Genre */}
-          <motion.div variants={itemVariants} className="text-center">
-            <h3 className="text-lg font-bold mb-2">Top Genre</h3>
-            <p className="text-3xl font-bold text-primary">
-              {stats.topGenre}
-            </p>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Background decoration */}
-      <motion.div 
-        className="absolute inset-0 -z-10 opacity-20 overflow-hidden"
-        initial={{ rotate: 0 }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-      >
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full border-2 border-primary/40" />
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full border-2 border-primary/40" />
+          </div>
+          <p className="text-xl font-bold text-primary hover:underline">
+            <Link href="https://unwrapped2024.vercel.app">Get yours at unwrapped2024.vercel.app</Link>
+          </p>
+        </motion.div>
       </motion.div>
     </div>
   )

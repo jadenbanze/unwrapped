@@ -20,44 +20,17 @@ interface TopSong {
 export default function Slide5({ topSong }: { topSong: TopSong }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   
-  // Format the first listen date from the data
-  const firstListenDate = new Date().toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  const titleWords = "Your top song was".split(" ");
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
     const target = e.currentTarget as HTMLElement;
 
-    const x = ((clientX - target.offsetWidth / 2) / (target.offsetWidth / 2)) * 10; // Adjust the multiplier for tilt strength
-    const y = ((clientY - target.offsetHeight / 2) / (target.offsetHeight / 2)) * -10; // Invert Y for natural tilt
+    const x = ((clientX - target.offsetWidth / 2) / (target.offsetWidth / 2)) * 10;
+    const y = ((clientY - target.offsetHeight / 2) / (target.offsetHeight / 2)) * -10;
 
     setTilt({ x, y });
   };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  }
 
   const searchQuery = `${topSong.name} ${topSong.artist}`;
   useAudioPreview(searchQuery);
@@ -81,23 +54,30 @@ export default function Slide5({ topSong }: { topSong: TopSong }) {
         <Repeat className="w-10 h-10 text-primary/20" />
       </FloatingObject>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="z-10 flex flex-col items-center"
-      >
-        <motion.h2 
-          variants={itemVariants}
-          className="text-2xl font-bold mb-6"
-        >
-          Your top song was
-        </motion.h2>
+      <motion.div className="z-10 flex flex-col items-center">
+        <div className="flex gap-2 justify-center flex-wrap mb-6">
+          {titleWords.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: i * 0.2,
+                duration: 0.3
+              }}
+              className="text-2xl font-bold"
+            >
+              {word}
+            </motion.span>
+          ))}
+        </div>
         
         <motion.div 
-          variants={itemVariants}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: titleWords.length * 0.2 + 0.3 }}
           onMouseMove={handleMouseMove}
-          onMouseLeave={() => setTilt({ x: 0, y: 0 })} // Reset tilt on mouse leave
+          onMouseLeave={() => setTilt({ x: 0, y: 0 })}
           style={{ 
             transform: `rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)`,
             transition: 'transform 0.1s ease-out'
@@ -107,7 +87,7 @@ export default function Slide5({ topSong }: { topSong: TopSong }) {
           <motion.div
             whileHover={{ 
               scale: 1.05, 
-              rotate: [0, -2, 2, -2, 0], // Shaking effect
+              rotate: [0, -2, 2, -2, 0],
               transition: { duration: 0.3 }
             }}
           >
@@ -122,21 +102,27 @@ export default function Slide5({ topSong }: { topSong: TopSong }) {
         </motion.div>
 
         <motion.p 
-          variants={itemVariants}
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: titleWords.length * 0.2 + 0.6 }}
           className="text-xl font-bold mb-2"
         >
           {topSong.name}
         </motion.p>
         
         <motion.p 
-          variants={itemVariants}
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: titleWords.length * 0.2 + 0.8 }}
           className="text-lg mb-4 text-muted-foreground"
         >
           by {topSong.artist}
         </motion.p>
 
         <motion.div 
-          variants={itemVariants}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: titleWords.length * 0.2 + 1 }}
           className="space-y-2"
         >
           <p className="text-md">You listened to it <span className="text-primary font-bold">{topSong.playCount} times</span></p>
