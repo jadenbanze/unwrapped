@@ -52,7 +52,7 @@ export default function Home() {
             className="mt-4 text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto"
             variants={itemVariants}
           >
-            Let's be honest, Spotify dropped the ball this year with Wrapped. Let's fix that.
+            2024 music analyzed and unwrapped!
           </motion.p>
           <motion.div variants={itemVariants}>
             <Button 
