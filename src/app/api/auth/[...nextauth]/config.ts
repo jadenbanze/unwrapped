@@ -21,6 +21,9 @@ export const authOptions: NextAuthOptions = {
         params: {
           scope: 'user-read-email user-read-private user-top-read user-library-read streaming'
         }
+      },
+      httpOptions: {
+        timeout: 10000,
       }
     }),
   ],
