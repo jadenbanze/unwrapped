@@ -176,7 +176,7 @@ export default function Stories() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-7rem)] w-full bg-gradient-to-br from-background to-primary/10 px-4 py-6">
+    <div className="relative min-h-[calc(100vh-3.5rem)] w-full bg-background px-4 py-6">
       <div className="h-full flex flex-col items-center justify-center">
         <div className="w-full max-w-md flex justify-center gap-2 sm:gap-3 mb-4">
           {slides.map((_, index) => (
@@ -201,7 +201,7 @@ export default function Stories() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.3 }}
-              className="w-full h-full bg-card rounded-lg shadow-lg overflow-hidden"
+              className="w-full h-full bg-background rounded-lg border border-primary/20 shadow-lg overflow-hidden"
               id={`story-slide-${currentSlide}`}
             >
               {slides.map((SlideComponent, index) => (
@@ -240,19 +240,19 @@ export default function Stories() {
           </div>
 
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             className="fixed left-1 sm:left-4 md:left-8 top-1/2 transform -translate-y-1/2 
-                       w-8 h-8 sm:w-10 sm:h-10 bg-background/50 hover:bg-background/80 backdrop-blur-sm"
+                       w-8 h-8 sm:w-10 sm:h-10 bg-background border border-primary/20 hover:bg-accent"
             onClick={prevSlide}
           >
             <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" />
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             className="fixed right-1 sm:right-4 md:right-8 top-1/2 transform -translate-y-1/2 
-                       w-8 h-8 sm:w-10 sm:h-10 bg-background/50 hover:bg-background/80 backdrop-blur-sm"
+                       w-8 h-8 sm:w-10 sm:h-10 bg-background border border-primary/20 hover:bg-accent"
             onClick={nextSlide}
           >
             <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6" />
