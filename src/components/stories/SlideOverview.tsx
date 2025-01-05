@@ -20,16 +20,19 @@ interface ProcessedData {
 
 export default function SlideOverview({ 
   session, 
-  processedData 
+  processedData,
+  isPreview = false
 }: { 
   session: any;
   processedData: ProcessedData;
+  isPreview?: boolean;
 }) {
   const searchQuery = useMemo(() => {
+    if (isPreview) return '';
     if (!processedData?.topSongs?.length) return '';
     const randomSong = processedData.topSongs[Math.floor(Math.random() * processedData.topSongs.length)];
     return `${randomSong.name} ${randomSong.artist}`;
-  }, [processedData]);
+  }, [processedData, isPreview]);
 
   useAudioPreview(searchQuery);
 
