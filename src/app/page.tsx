@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Download, Upload, Star, ArrowRight } from 'lucide-react'
 import { signIn, useSession } from "next-auth/react"
 import SlideOverview from "@/components/stories/SlideOverview"
+import { useState, useEffect } from "react"
 
 const MOCK_DATA = {
   topArtists: [
@@ -69,6 +70,27 @@ const MOCK_DATA = {
 
 export default function Home() {
   const { data: session } = useSession()
+  const [mouseX, setMouseX] = useState(0)
+  const [mouseY, setMouseY] = useState(0)
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) - 0.5
+    const y = ((e.clientY - rect.top) / rect.height) - 0.5
+    setMouseX(x)
+    setMouseY(y)
+  }
+
+  // Add this CSS to your globals.css
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .perspective-1000 { perspective: 1000px; }
+      .preserve-3d { transform-style: preserve-3d; }
+    `
+    document.head.appendChild(style)
+    return () => style.remove()
+  }, [])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -106,7 +128,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-background via-background to-primary/10">
+    <div 
+      className="min-h-[calc(100vh-3.5rem)] bg-gradient-to-br from-background via-background to-primary/10"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => {
+        setMouseX(0)
+        setMouseY(0)
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Text Content */}
@@ -197,15 +226,28 @@ export default function Home() {
             variants={slideUpVariants}
             initial="hidden"
             animate="visible"
-            className="relative hidden lg:block"
+            className="relative hidden lg:block perspective-1000 w-full h-full"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => {
+              setMouseX(0)
+              setMouseY(0)
+            }}
           >
-            <div className="transform scale-90 origin-top rounded-xl border border-primary/20 shadow-lg overflow-hidden bg-background">
+            <motion.div 
+              className="transform scale-95 origin-top rounded-xl border border-primary/20 shadow-lg overflow-hidden bg-background preserve-3d"
+              whileHover={{ scale: 0.98 }}
+              animate={{ 
+                rotateX: mouseY * 5,
+                rotateY: mouseX * -5,
+                transition: { type: "spring", stiffness: 400, damping: 30 }
+              }}
+            >
               <SlideOverview 
-                session={session || { user: { name: "User", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0vUyJc5jOVVzexNQlXRn2xWoLY-B2ysYtWQ&s" }}} 
+                session={session || { user: { name: "Preview User", image: null }}} 
                 processedData={MOCK_DATA}
                 isPreview={true}
               />
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
